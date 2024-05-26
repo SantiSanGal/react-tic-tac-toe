@@ -34,7 +34,7 @@ const Square = ({ children, isSelected, updateBoard, index }: any) => {
 function App() {
   const [board, setBoard] = useState(Array(9).fill(null))
   const [turn, setTurn] = useState(TURNS.X)
-  const [winner, setWinner] = useState(null) //nul sin ganador, false empate
+  const [winner, setWinner] = useState<string | null | false>(null) //nul sin ganador, false empate
 
   const checkWinner = (boardToCheck: any) => {
     console.log('entra checkWinner');
@@ -62,6 +62,12 @@ function App() {
     setWinner(null)
   }
 
+  const checkEndGame = (newBoard: any) => {
+    //si todas las posiciones tienen diferente a null, osea que se
+    // completaron todos los movimientos, se acabó el juego y es empate
+    return newBoard.every((square: any) => square !== null)
+  }
+
   const updateBoard = (index: any) => {
     if (board[index] || winner) return //no actualiza si la posicion tiene algo o si hay algún ganador
     const newBoard = [...board] //actualizar el tablero
@@ -72,12 +78,15 @@ function App() {
     const newWinner = checkWinner(newBoard) //revisar si hay un ganador
     if (newWinner) {
       setWinner(newWinner)
+    } else if (checkEndGame(newBoard)) {
+      setWinner(false)
     }
   }
 
   return (
     <main className='board'>
       <h1>Tic Tac Toe - Ta Te Ti</h1>
+      <button onClick={resetGame}>Reset del Juego</button>
       <section className='game'>
         {
           board.map((_, index) => {
